@@ -4,12 +4,19 @@ import { useState, useEffect, useRef } from 'react';
 import type { SearchBarProps } from '../model/types';
 
 export default function SearchBar({
+  value: controlledValue,
+  onChange,
   onSearch,
+  onSubmit,
   onLocationClick,
   placeholder = '병원 이름이나 주소를 검색하세요...',
 }: SearchBarProps) {
-  const [query, setQuery] = useState('');
+  const [internalQuery, setInternalQuery] = useState('');
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Controlled vs Uncontrolled
+  const query = controlledValue !== undefined ? controlledValue : internalQuery;
+  const setQuery = onChange || setInternalQuery;
 
   // 타이핑 중 자동 검색 (디바운싱)
   useEffect(() => {
@@ -36,7 +43,12 @@ export default function SearchBar({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      onSearch?.(query);
+      // Enter 키로 제출 시 onSubmit 호출 (첫 번째 결과 선택)
+      if (onSubmit) {
+        onSubmit(query.trim());
+      } else {
+        onSearch?.(query.trim());
+      }
     }
   };
 
@@ -71,7 +83,7 @@ export default function SearchBar({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={placeholder}
-            className="flex-1 bg-transparent border-none outline-none text-hospital-foreground placeholder:text-hospital-muted text-sm md:text-base"
+            className="flex-1 bg-transparent border-none outline-none text-hospital-foreground placeholder:text-hospital-muted text-base"
           />
 
           {/* 현재 위치 버튼 */}

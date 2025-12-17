@@ -13,10 +13,11 @@ import { SEOUL_CENTER } from '@/shared/config/constants';
 export default function MainPage() {
   const [currentLocation, setCurrentLocation] = useState<Coordinates | null>(null);
   const [mapCenter, setMapCenter] = useState<Coordinates>(SEOUL_CENTER);
-  const [mapZoomLevel, setMapZoomLevel] = useState<number>(8); // 기본: 넓은 영역
+  const [mapZoomLevel, setMapZoomLevel] = useState<number>(5); // 기본: 약 2-3km 범위
   const [searchMarker, setSearchMarker] = useState<{ position: Coordinates; name: string } | null>(null);
   const [searchResults, setSearchResults] = useState<AddressSearchResult[]>([]);
   const [showResults, setShowResults] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(''); // 검색어 상태 추가
   const { searchAddress, isSearching, error: searchError, clearError } = useAddressSearch();
 
   const handleSearch = async (query: string) => {
@@ -39,6 +40,19 @@ export default function MainPage() {
     }
   };
 
+  // Enter 키로 첫 번째 결과 선택
+  const handleSearchSubmit = async (query: string) => {
+    console.log('검색 제출:', query);
+    clearError();
+
+    const results = await searchAddress(query);
+
+    if (results.length > 0) {
+      // Enter 시 무조건 첫 번째 결과 선택
+      handleSelectResult(results[0]);
+    }
+  };
+
   const handleSelectResult = (result: AddressSearchResult) => {
     // 선택한 결과로 지도 중심 이동, 줌 레벨 4로 확대 (약 500m~1km 범위), 마커 표시
     setMapCenter(result.coordinates);
@@ -50,6 +64,7 @@ export default function MainPage() {
     });
     setShowResults(false);
     setSearchResults([]);
+    setSearchQuery(''); // 검색어 초기화 - 재검색 방지
     console.log('선택한 결과:', result, '/ 줌 레벨: 4');
   };
 
@@ -77,7 +92,10 @@ export default function MainPage() {
         <div className="max-w-[1200px] mx-auto">
           <div className="relative">
             <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
               onSearch={handleSearch}
+              onSubmit={handleSearchSubmit}
               onLocationClick={handleLocationClick}
             />
 
@@ -178,15 +196,15 @@ export default function MainPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* 통계 카드 1 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            {/* 통계 카드 1 - 총 동물병원 */}
             <div className="card-glass animate-slide-up">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-3">
                 <div>
                   <p className="text-sm text-hospital-muted mb-2">
                     총 동물병원
                   </p>
-                  <p className="text-3xl font-bold text-gradient">1,234</p>
+                  <p className="text-3xl font-bold text-gradient">5,474</p>
                 </div>
                 <div className="w-12 h-12 rounded-lg gradient-primary flex items-center justify-center">
                   <svg
@@ -204,17 +222,20 @@ export default function MainPage() {
                   </svg>
                 </div>
               </div>
+              <p className="text-xs text-hospital-muted">
+                2025년 7월 기준, 행정안전부 인허가 데이터
+              </p>
             </div>
 
-            {/* 통계 카드 2 */}
+            {/* 통계 카드 2 - 24시 병원 */}
             <div className="card-glass animate-slide-up" style={{ animationDelay: '0.1s' }}>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-3">
                 <div>
                   <p className="text-sm text-hospital-muted mb-2">
                     24시 병원
                   </p>
                   <p className="text-3xl font-bold text-hospital-secondary">
-                    156
+                    319
                   </p>
                 </div>
                 <div className="w-12 h-12 rounded-lg gradient-soft flex items-center justify-center">
@@ -233,35 +254,9 @@ export default function MainPage() {
                   </svg>
                 </div>
               </div>
-            </div>
-
-            {/* 통계 카드 3 */}
-            <div className="card-glass animate-slide-up" style={{ animationDelay: '0.2s' }}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-hospital-muted mb-2">
-                    이번 달 검색
-                  </p>
-                  <p className="text-3xl font-bold text-hospital-accent">
-                    5,678
-                  </p>
-                </div>
-                <div className="w-12 h-12 rounded-lg gradient-accent flex items-center justify-center">
-                  <svg
-                    className="w-6 h-6 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                    />
-                  </svg>
-                </div>
-              </div>
+              <p className="text-xs text-hospital-muted">
+                카카오맵 검색결과 기준
+              </p>
             </div>
           </div>
         </div>

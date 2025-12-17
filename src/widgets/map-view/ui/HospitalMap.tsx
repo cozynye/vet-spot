@@ -20,7 +20,7 @@ export default function HospitalMap({
   initialCenter = SEOUL_CENTER,
   searchMarker,
   onLocationChange,
-  zoomLevel = 8, // 기본값: 넓은 영역 표시
+  zoomLevel = 5, // 기본값: 약 2-3km 범위
 }: HospitalMapProps) {
   // Kakao Maps SDK 로드
   useKakaoLoader();
@@ -46,17 +46,45 @@ export default function HospitalMap({
   // 현재 위치로 이동
   const handleMoveToCurrentLocation = () => {
     getCurrentLocation();
+  };
+
+  // location이 변경되면 지도 중심 이동
+  useEffect(() => {
     if (location) {
       setCenter(location);
+      setLevel(4); // 현재 위치로 이동 시 확대
       onLocationChange?.(location);
     }
+  }, [location, onLocationChange]);
+
+  // bounds를 확장하는 헬퍼 함수 (1.5배 확장)
+  const getExpandedBounds = (bounds: kakao.maps.LatLngBounds) => {
+    const sw = bounds.getSouthWest();
+    const ne = bounds.getNorthEast();
+
+    // 위도/경도 범위 계산
+    const latDiff = ne.getLat() - sw.getLat();
+    const lngDiff = ne.getLng() - sw.getLng();
+
+    // 25%씩 확장 (총 1.5배)
+    const expandedSw = new kakao.maps.LatLng(
+      sw.getLat() - latDiff * 0.25,
+      sw.getLng() - lngDiff * 0.25
+    );
+    const expandedNe = new kakao.maps.LatLng(
+      ne.getLat() + latDiff * 0.25,
+      ne.getLng() + lngDiff * 0.25
+    );
+
+    return new kakao.maps.LatLngBounds(expandedSw, expandedNe);
   };
 
   // 지도 로드 시 병원 데이터 로드
   useEffect(() => {
     if (map) {
       const bounds = map.getBounds();
-      loadHospitals(bounds);
+      const expandedBounds = getExpandedBounds(bounds);
+      loadHospitals(expandedBounds);
     }
   }, [map, loadHospitals]);
 
@@ -73,7 +101,17 @@ export default function HospitalMap({
   // 지도 이동 완료 시 병원 재로드 (드래그 종료 시)
   const handleIdle = (map: kakao.maps.Map) => {
     const bounds = map.getBounds();
-    loadHospitals(bounds);
+    const expandedBounds = getExpandedBounds(bounds);
+    loadHospitals(expandedBounds);
+  };
+
+  // 줌 레벨 변경 시 병원 재로드
+  const handleZoomChanged = (map: kakao.maps.Map) => {
+    const newLevel = map.getLevel();
+    setLevel(newLevel);
+    const bounds = map.getBounds();
+    const expandedBounds = getExpandedBounds(bounds);
+    loadHospitals(expandedBounds);
   };
 
   return (
@@ -89,6 +127,7 @@ export default function HospitalMap({
         }}
         onCreate={setMap}
         onCenterChanged={handleCenterChange}
+        onZoomChanged={handleZoomChanged}
         onIdle={handleIdle}
       >
         {/* 동물병원 마커 클러스터링 */}
