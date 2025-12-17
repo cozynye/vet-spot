@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   creator: "동물병원 찾기",
   publisher: "동물병원 찾기",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3011"
+    process.env.NEXT_PUBLIC_BASE_URL || "https://ko-vet-spot.vercel.app"
   ),
   alternates: {
     canonical: "/",
@@ -142,7 +142,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   name: "전국 동물병원 찾기",
-  url: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3011",
+  url: process.env.NEXT_PUBLIC_BASE_URL || "https://ko-vet-spot.vercel.app",
   description:
     `전국 ${HOSPITAL_STATS.totalFormatted}개 동물병원을 지도에서 쉽게 찾아보세요. 24시간 응급 동물병원, 주변 동물병원 실시간 검색 서비스.`,
   applicationCategory: "HealthApplication",
@@ -160,6 +160,6 @@ const jsonLd = {
   provider: {
     "@type": "Organization",
     name: "동물병원 찾기",
-    url: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3011",
+    url: process.env.NEXT_PUBLIC_BASE_URL || "https://ko-vet-spot.vercel.app",
   },
 };
