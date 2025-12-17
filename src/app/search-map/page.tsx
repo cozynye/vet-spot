@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import SearchMapPage from '@/page-compositions/search-map/ui/SearchMapPage';
 
 export const metadata = {
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <SearchMapPage />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SearchMapPage />
+    </Suspense>
+  );
 }

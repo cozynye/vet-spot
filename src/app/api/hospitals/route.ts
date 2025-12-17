@@ -21,8 +21,10 @@ import type { Hospital } from '@/entities/hospital/model/types';
  * - swLng: 남서쪽 경도
  * - neLat: 북동쪽 위도
  * - neLng: 북동쪽 경도
+ *
+ * @deprecated 현재 사용하지 않음 - JavaScript SDK 사용 중
  */
-export async function GET_DISABLED(request: NextRequest) {
+async function GET_DISABLED(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
 

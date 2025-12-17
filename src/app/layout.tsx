@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
+// import { Inspector } from 'react-dev-inspector';
 import './globals.css';
 
 export const viewport: Viewport = {
@@ -168,6 +169,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased" suppressHydrationWarning>
+        {/* {!isProduction && <Inspector />} */}
         {children}
       </body>
     </html>

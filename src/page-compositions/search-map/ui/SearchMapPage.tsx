@@ -29,7 +29,7 @@ export default function SearchMapPage() {
 
   // URL 파라미터에서 검색어 가져와서 자동 검색
   useEffect(() => {
-    const query = searchParams.get('q');
+    const query = searchParams?.get('q');
     if (query && query !== searchQuery) {
       setSearchQuery(query);
       // 중복 검색 방지를 위해 즉시 lastSearchQuery 설정
