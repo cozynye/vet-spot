@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { SearchIcon, MenuIcon, CloseIcon } from "@/shared/ui/icons";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -41,7 +40,7 @@ export default function Header() {
               href="/search-map"
               className="px-6 py-2.5 rounded-lg text-sm font-medium glass hover:bg-white/50 transition-all duration-300 flex items-center gap-2 border border-hospital-primary/20 shadow-sm hover:shadow-md"
             >
-              <SearchIcon className="w-5 h-5 text-hospital-primary" />
+              <Image src="/icon/search.svg" alt="검색" width={20} height={20} className="text-hospital-primary" />
               <span className="text-hospital-foreground font-semibold">
                 상세 찾기
               </span>
@@ -54,7 +53,11 @@ export default function Header() {
             className="tablet:hidden p-2 rounded-lg hover:bg-white/50 transition-all duration-300"
             aria-label="메뉴"
           >
-            {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
+            {isMenuOpen ? (
+              <Image src="/icon/close.svg" alt="닫기" width={24} height={24} />
+            ) : (
+              <Image src="/icon/menu.svg" alt="메뉴" width={24} height={24} />
+            )}
           </button>
         </div>
       </div>
@@ -68,7 +71,7 @@ export default function Header() {
               className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium glass hover:bg-white/10 transition-all duration-300 border border-hospital-primary/20"
               onClick={() => setIsMenuOpen(false)}
             >
-              <SearchIcon className="w-5 h-5 text-hospital-primary" />
+              <Image src="/icon/search.svg" alt="검색" width={20} height={20} />
               <span className="text-white font-semibold">상세 찾기</span>
             </a>
           </div>
