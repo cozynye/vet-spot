@@ -15,6 +15,13 @@ export const API_ENDPOINTS = {
   hospitals: '/api/hospitals',
 } as const;
 
+// 병원 통계
+export const HOSPITAL_STATS = {
+  total: 5474,
+  totalFormatted: '5,474',
+  emergency24h: 319,
+} as const;
+
 // 사이트 정보
 export const SITE_INFO = {
   name: '동물병원 찾기',

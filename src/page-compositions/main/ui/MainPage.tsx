@@ -5,7 +5,7 @@ import Image from "next/image";
 import Header from "@/widgets/header/ui/Header";
 import HospitalMap from "@/widgets/map-view/ui/HospitalMap";
 import type { Coordinates } from "@/shared/types/hospital";
-import { SEOUL_CENTER } from "@/shared/config/constants";
+import { SEOUL_CENTER, HOSPITAL_STATS } from "@/shared/config/constants";
 
 export default function MainPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -27,7 +27,7 @@ export default function MainPage() {
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-hospital-primary/10 border border-hospital-primary/20">
                 <span className="text-sm font-medium text-hospital-primary">
-                  전국 5,474개 동물병원
+                  전국 {HOSPITAL_STATS.totalFormatted}개 동물병원
                 </span>
               </div>
 
@@ -154,7 +154,7 @@ export default function MainPage() {
                   <p className="text-sm text-hospital-muted mb-2">
                     총 동물병원
                   </p>
-                  <p className="text-3xl font-bold text-gradient">5,474</p>
+                  <p className="text-3xl font-bold text-gradient">{HOSPITAL_STATS.totalFormatted}</p>
                 </div>
                 <div className="w-12 h-12 rounded-lg gradient-primary flex items-center justify-center">
                   <Image

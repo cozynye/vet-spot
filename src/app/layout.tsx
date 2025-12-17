@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import "./globals.css";
+import { HOSPITAL_STATS } from "@/shared/config/constants";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
     template: "%s | 동물병원 찾기",
   },
   description:
-    "전국 5,474개 동물병원을 지도에서 쉽게 찾아보세요. 24시간 응급 동물병원 319개, 주변 동물병원 실시간 검색, 진료시간, 위치, 전화번호 정보 제공. 반려동물을 위한 가장 빠른 동물병원 검색 서비스.",
+    `전국 ${HOSPITAL_STATS.totalFormatted}개 동물병원을 지도에서 쉽게 찾아보세요. 24시간 응급 동물병원 ${HOSPITAL_STATS.emergency24h}개, 주변 동물병원 실시간 검색, 진료시간, 위치, 전화번호 정보 제공. 반려동물을 위한 가장 빠른 동물병원 검색 서비스.`,
   keywords: [
     "동물병원",
     "동물병원 찾기",
@@ -53,7 +54,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "전국 동물병원 찾기 | 우리동네 동물병원 지도",
     description:
-      "전국 5,474개 동물병원, 24시간 응급 동물병원 319개. 지도에서 빠르게 찾고, 진료시간과 위치를 한눈에 확인하세요. 반려동물 응급 상황에 가장 빠른 검색 서비스.",
+      `전국 ${HOSPITAL_STATS.totalFormatted}개 동물병원, 24시간 응급 동물병원 ${HOSPITAL_STATS.emergency24h}개. 지도에서 빠르게 찾고, 진료시간과 위치를 한눈에 확인하세요. 반려동물 응급 상황에 가장 빠른 검색 서비스.`,
     type: "website",
     locale: "ko_KR",
     url: "/",
@@ -63,16 +64,16 @@ export const metadata: Metadata = {
         url: "/icon/p-icon.png",
         width: 1200,
         height: 630,
-        alt: "동물병원 찾기 - 전국 5,474개 동물병원 실시간 검색 서비스",
+        alt: `동물병원 찾기 - 전국 ${HOSPITAL_STATS.totalFormatted}개 동물병원 실시간 검색 서비스`,
         type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "전국 동물병원 찾기 | 5,474개 병원 실시간 검색",
+    title: `전국 동물병원 찾기 | ${HOSPITAL_STATS.totalFormatted}개 병원 실시간 검색`,
     description:
-      "24시간 응급 동물병원 319개 포함. 지도에서 가장 가까운 동물병원을 빠르게 찾아보세요.",
+      `24시간 응급 동물병원 ${HOSPITAL_STATS.emergency24h}개 포함. 지도에서 가장 가까운 동물병원을 빠르게 찾아보세요.`,
     images: ["/icon/p-icon.png"],
     creator: "@animal_hospital",
     site: "@animal_hospital",
@@ -143,7 +144,7 @@ const jsonLd = {
   name: "전국 동물병원 찾기",
   url: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3011",
   description:
-    "전국 5,474개 동물병원을 지도에서 쉽게 찾아보세요. 24시간 응급 동물병원, 주변 동물병원 실시간 검색 서비스.",
+    `전국 ${HOSPITAL_STATS.totalFormatted}개 동물병원을 지도에서 쉽게 찾아보세요. 24시간 응급 동물병원, 주변 동물병원 실시간 검색 서비스.`,
   applicationCategory: "HealthApplication",
   operatingSystem: "Web",
   offers: {
