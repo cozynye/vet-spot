@@ -2,83 +2,14 @@
 
 import { useState } from 'react';
 import Header from '@/widgets/header/ui/Header';
-import SearchBar from '@/features/hospital-search/ui/SearchBar';
 import HospitalMap from '@/widgets/map-view/ui/HospitalMap';
-import SearchResultList from '@/features/address-search/ui/SearchResultList';
-import { useAddressSearch } from '@/features/address-search/model/useAddressSearch';
 import type { Coordinates } from '@/shared/types/hospital';
-import type { AddressSearchResult } from '@/features/address-search/model/types';
 import { SEOUL_CENTER } from '@/shared/config/constants';
 
 export default function MainPage() {
-  const [currentLocation, setCurrentLocation] = useState<Coordinates | null>(null);
-  const [mapCenter, setMapCenter] = useState<Coordinates>(SEOUL_CENTER);
-  const [mapZoomLevel, setMapZoomLevel] = useState<number>(5); // 기본: 약 2-3km 범위
-  const [searchMarker, setSearchMarker] = useState<{ position: Coordinates; name: string } | null>(null);
-  const [searchResults, setSearchResults] = useState<AddressSearchResult[]>([]);
-  const [showResults, setShowResults] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(''); // 검색어 상태 추가
-  const { searchAddress, isSearching, error: searchError, clearError } = useAddressSearch();
-
-  const handleSearch = async (query: string) => {
-    console.log('검색:', query);
-    clearError();
-
-    // 주소 검색 실행
-    const results = await searchAddress(query);
-
-    if (results.length > 0) {
-      console.log('검색 성공:', results.length, '개 결과');
-
-      // 결과가 1개면 바로 이동, 여러 개면 리스트 표시
-      if (results.length === 1) {
-        handleSelectResult(results[0]);
-      } else {
-        setSearchResults(results);
-        setShowResults(true);
-      }
-    }
-  };
-
-  // Enter 키로 첫 번째 결과 선택
-  const handleSearchSubmit = async (query: string) => {
-    console.log('검색 제출:', query);
-    clearError();
-
-    const results = await searchAddress(query);
-
-    if (results.length > 0) {
-      // Enter 시 무조건 첫 번째 결과 선택
-      handleSelectResult(results[0]);
-    }
-  };
-
-  const handleSelectResult = (result: AddressSearchResult) => {
-    // 선택한 결과로 지도 중심 이동, 줌 레벨 4로 확대 (약 500m~1km 범위), 마커 표시
-    setMapCenter(result.coordinates);
-    setCurrentLocation(result.coordinates);
-    setMapZoomLevel(4); // 검색 결과로 이동 시 자동 확대 (약 500m~1km)
-    setSearchMarker({
-      position: result.coordinates,
-      name: result.name || result.address,
-    });
-    setShowResults(false);
-    setSearchResults([]);
-    setSearchQuery(''); // 검색어 초기화 - 재검색 방지
-    console.log('선택한 결과:', result, '/ 줌 레벨: 4');
-  };
-
-  const handleCloseResults = () => {
-    setShowResults(false);
-  };
-
-  const handleLocationClick = () => {
-    console.log('내 위치로 이동');
-    // TODO: 위치 이동 로직 구현
-  };
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleLocationChange = (location: Coordinates) => {
-    setCurrentLocation(location);
     console.log('위치 변경:', location);
   };
 
@@ -87,98 +18,89 @@ export default function MainPage() {
       {/* 헤더 */}
       <Header />
 
-      {/* 검색바 */}
-      <section className="bg-gradient-to-br from-hospital-primary/10 via-hospital-secondary/10 to-hospital-accent/10">
-        <div className="max-w-[1200px] mx-auto">
-          <div className="relative">
-            <SearchBar
-              value={searchQuery}
-              onChange={setSearchQuery}
-              onSearch={handleSearch}
-              onSubmit={handleSearchSubmit}
-              onLocationClick={handleLocationClick}
-            />
-
-            {/* 검색 결과 리스트 */}
-            {showResults && (
-              <div className="w-full max-w-4xl mx-auto px-4 relative">
-                <SearchResultList
-                  results={searchResults}
-                  onSelect={handleSelectResult}
-                  onClose={handleCloseResults}
-                />
+      {/* Hero 섹션 - 서비스 소개 & 지도 미리보기 */}
+      <section className="py-16 bg-gradient-to-br from-hospital-background to-white">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            {/* 왼쪽: 서비스 설명 & 검색 */}
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-hospital-primary/10 border border-hospital-primary/20">
+                <span className="text-sm font-medium text-hospital-primary">전국 5,474개 동물병원</span>
               </div>
-            )}
-          </div>
 
-          {/* 검색 에러 메시지 */}
-          {searchError && (
-            <div className="px-4 pb-4 animate-fade-in">
-              <div className="card-glass bg-red-50 border border-red-200 px-4 py-3 rounded-lg max-w-4xl mx-auto">
-                <div className="flex items-center gap-2">
-                  <svg
-                    className="w-5 h-5 text-red-500 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
+              <h2 className="text-4xl lg:text-5xl font-bold text-gradient leading-tight">
+                우리 동네<br />
+                동물병원 찾기
+              </h2>
+
+              <p className="text-lg text-hospital-muted leading-relaxed">
+                전국의 동물병원 정보를 한눈에 확인하세요.<br />
+                지도에서 간편하게 검색하고, 위치를 공유할 수 있습니다.
+              </p>
+
+              {/* 간단한 검색바 */}
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="지역명으로 검색 (예: 서울시청, 강남역)"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && searchQuery.trim()) {
+                      window.location.href = `/search-map?q=${encodeURIComponent(searchQuery.trim())}`;
+                    }
+                  }}
+                  className="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:border-hospital-primary focus:ring-2 focus:ring-hospital-primary/20 transition-all outline-none"
+                />
+                <button
+                  onClick={() => {
+                    if (searchQuery.trim()) {
+                      window.location.href = `/search-map?q=${encodeURIComponent(searchQuery.trim())}`;
+                    }
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-hospital-primary text-white hover:bg-hospital-primary/90 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                  <p className="text-sm text-red-600">{searchError}</p>
-                  <button
-                    onClick={clearError}
-                    className="ml-auto text-red-400 hover:text-red-600 transition-colors"
-                    aria-label="닫기"
-                  >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg glass">
+                  <svg className="w-5 h-5 text-hospital-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-sm font-medium">실시간 검색</span>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg glass">
+                  <svg className="w-5 h-5 text-hospital-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  </svg>
+                  <span className="text-sm font-medium">위치 기반</span>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg glass">
+                  <svg className="w-5 h-5 text-hospital-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  </svg>
+                  <span className="text-sm font-medium">위치 공유</span>
                 </div>
               </div>
             </div>
-          )}
-        </div>
-      </section>
 
-      {/* 지도 영역 */}
-      <section
-        id="map"
-        className="relative bg-white w-full"
-        style={{ height: '600px' }}
-      >
-        <div className="max-w-[1200px] mx-auto px-[10px] h-full">
-          <HospitalMap
-            initialCenter={mapCenter}
-            searchMarker={searchMarker}
-            onLocationChange={handleLocationChange}
-            zoomLevel={mapZoomLevel}
-          />
-        </div>
-        {/* 검색 중 로딩 오버레이 */}
-        {isSearching && (
-          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-20 animate-fade-in">
-            <div className="card-glass px-6 py-4 flex items-center gap-3">
-              <div className="w-5 h-5 border-2 border-hospital-primary border-t-transparent rounded-full animate-spin" />
-              <p className="text-hospital-foreground font-medium">주소 검색 중...</p>
+            {/* 오른쪽: 지도 미리보기 */}
+            <div className="relative">
+              <div className="rounded-2xl overflow-hidden shadow-2xl border border-gray-200" style={{ height: '500px' }}>
+                <HospitalMap
+                  initialCenter={SEOUL_CENTER}
+                  onLocationChange={handleLocationChange}
+                  zoomLevel={5}
+                  showLocationButton={false}
+                />
+              </div>
             </div>
           </div>
-        )}
+        </div>
       </section>
 
       {/* 통계 섹션 (Placeholder) */}
@@ -227,16 +149,14 @@ export default function MainPage() {
               </p>
             </div>
 
-            {/* 통계 카드 2 - 24시 병원 */}
+            {/* 통계 카드 2 - 24시 동물병원 */}
             <div className="card-glass animate-slide-up" style={{ animationDelay: '0.1s' }}>
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <p className="text-sm text-hospital-muted mb-2">
-                    24시 병원
+                    24시 동물병원
                   </p>
-                  <p className="text-3xl font-bold text-hospital-secondary">
-                    319
-                  </p>
+                  <p className="text-3xl font-bold text-gradient">약 320+</p>
                 </div>
                 <div className="w-12 h-12 rounded-lg gradient-soft flex items-center justify-center">
                   <svg
@@ -255,9 +175,10 @@ export default function MainPage() {
                 </div>
               </div>
               <p className="text-xs text-hospital-muted">
-                카카오맵 검색결과 기준
+                24시간 응급 진료 가능 병원
               </p>
             </div>
+
           </div>
         </div>
       </section>

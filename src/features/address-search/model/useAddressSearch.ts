@@ -40,8 +40,8 @@ export function useAddressSearch(): UseAddressSearchReturn {
         if (placesStatus === window.kakao.maps.services.Status.OK && placesResult.length > 0) {
           setIsSearching(false);
 
-          // 최대 5개까지만 반환
-          const results = placesResult.slice(0, 5).map((result) => ({
+          // 최대 20개까지만 반환
+          const results = placesResult.slice(0, 20).map((result) => ({
             name: result.place_name,
             address: result.address_name,
             coordinates: {

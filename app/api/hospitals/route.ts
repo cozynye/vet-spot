@@ -1,3 +1,13 @@
+/**
+ * ⚠️ DEPRECATED: REST API 방식 (고정 IP 필요)
+ *
+ * Vercel 배포 시 고정 IP가 없어 사용 불가
+ * 현재는 JavaScript SDK (Places 서비스)를 사용 중
+ *
+ * 추후 고정 IP 호스팅으로 변경 시 다시 활성화 가능
+ */
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from 'next/server';
 import { searchAnimalHospitals } from '@/entities/hospital/api/kakaoLocalApi';
 import type { Hospital } from '@/entities/hospital/model/types';
@@ -12,7 +22,7 @@ import type { Hospital } from '@/entities/hospital/model/types';
  * - neLat: 북동쪽 위도
  * - neLng: 북동쪽 경도
  */
-export async function GET(request: NextRequest) {
+export async function GET_DISABLED(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
 

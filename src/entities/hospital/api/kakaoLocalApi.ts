@@ -1,6 +1,18 @@
 /**
+ * ⚠️ DEPRECATED: Kakao REST API 방식 (고정 IP 필요)
+ *
+ * Vercel 배포 시 고정 IP가 없어 사용 불가
+ * 현재는 JavaScript SDK (Places 서비스)를 사용 중
+ *
+ * 추후 고정 IP 호스팅으로 변경 시 다시 활성화 가능
+ */
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+/**
  * Kakao Local API Client
  * 카카오 로컬 API를 사용하여 동물병원 검색
+ * @deprecated JavaScript SDK 방식으로 변경됨
  */
 
 interface KakaoPlace {

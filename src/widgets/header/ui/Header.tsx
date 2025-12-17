@@ -48,26 +48,24 @@ export default function Header() {
           {/* 데스크탑 네비게이션 */}
           <nav className="hidden md:flex items-center space-x-4">
             <a
-              href="#map"
-              className="px-4 py-2 rounded-lg text-sm font-medium text-hospital-foreground hover:bg-white/50 transition-all duration-300"
+              href="/search-map"
+              className="px-6 py-2.5 rounded-lg text-sm font-medium glass hover:bg-white/50 transition-all duration-300 flex items-center gap-2 border border-hospital-primary/20 shadow-sm hover:shadow-md"
             >
-              지도
+              <svg
+                className="w-5 h-5 text-hospital-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              <span className="text-hospital-foreground font-semibold">상세 찾기</span>
             </a>
-            <a
-              href="#stats"
-              className="px-4 py-2 rounded-lg text-sm font-medium text-hospital-foreground hover:bg-white/50 transition-all duration-300"
-            >
-              통계
-            </a>
-            <a
-              href="#guide"
-              className="px-4 py-2 rounded-lg text-sm font-medium text-hospital-foreground hover:bg-white/50 transition-all duration-300"
-            >
-              사용 가이드
-            </a>
-            <button className="btn-primary">
-              내 위치로
-            </button>
           </nav>
 
           {/* 모바일 메뉴 버튼 */}
@@ -105,34 +103,27 @@ export default function Header() {
       {/* 모바일 메뉴 */}
       {isMenuOpen && (
         <div className="md:hidden glass-dark border-t border-white/10 animate-slide-up">
-          <div className="px-4 py-3 space-y-2">
+          <div className="px-4 py-3">
             <a
-              href="#map"
-              className="block px-4 py-2 rounded-lg text-sm font-medium text-white hover:bg-white/10 transition-all duration-300"
+              href="/search-map"
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium glass hover:bg-white/10 transition-all duration-300 border border-hospital-primary/20"
               onClick={() => setIsMenuOpen(false)}
             >
-              지도
+              <svg
+                className="w-5 h-5 text-hospital-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              <span className="text-white font-semibold">상세 찾기</span>
             </a>
-            <a
-              href="#stats"
-              className="block px-4 py-2 rounded-lg text-sm font-medium text-white hover:bg-white/10 transition-all duration-300"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              통계
-            </a>
-            <a
-              href="#guide"
-              className="block px-4 py-2 rounded-lg text-sm font-medium text-white hover:bg-white/10 transition-all duration-300"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              사용 가이드
-            </a>
-            <button
-              className="w-full btn-primary"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              내 위치로
-            </button>
           </div>
         </div>
       )}

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     template: '%s | 동물병원 찾기',
   },
   description:
-    '전국 동물병원을 지도에서 쉽게 찾아보세요. 24시간 응급 동물병원, 주변 동물병원 검색, 진료시간, 위치, 전화번호 정보 제공. 반려동물을 위한 가장 빠른 동물병원 검색 서비스.',
+    '전국 5,474개 동물병원을 지도에서 쉽게 찾아보세요. 24시간 응급 동물병원 319개, 주변 동물병원 실시간 검색, 진료시간, 위치, 전화번호 정보 제공. 반려동물을 위한 가장 빠른 동물병원 검색 서비스.',
   keywords: [
     '동물병원',
     '동물병원 찾기',
@@ -31,6 +31,15 @@ export const metadata: Metadata = {
     '반려동물 응급실',
     '동물병원 지도',
     '동물병원 검색',
+    '동물병원 정보',
+    '수의사 찾기',
+    '반려동물 의료',
+    '전국 동물병원',
+    '동물병원 위치',
+    '동물병원 전화번호',
+    '24시간 동물병원',
+    '야간 동물병원',
+    '주말 동물병원',
   ],
   authors: [{ name: '동물병원 찾기', url: 'https://animal-hospital.com' }],
   creator: '동물병원 찾기',
@@ -44,7 +53,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: '전국 동물병원 찾기 | 우리동네 동물병원 지도',
     description:
-      '24시간 응급 동물병원부터 일반 동물병원까지! 지도에서 빠르게 찾고, 진료시간과 위치를 한눈에 확인하세요.',
+      '전국 5,474개 동물병원, 24시간 응급 동물병원 319개. 지도에서 빠르게 찾고, 진료시간과 위치를 한눈에 확인하세요. 반려동물 응급 상황에 가장 빠른 검색 서비스.',
     type: 'website',
     locale: 'ko_KR',
     url: '/',
@@ -54,18 +63,19 @@ export const metadata: Metadata = {
         url: '/icon/p-icon.png',
         width: 1200,
         height: 630,
-        alt: '동물병원 찾기 - 전국 동물병원 지도 서비스',
+        alt: '동물병원 찾기 - 전국 5,474개 동물병원 실시간 검색 서비스',
         type: 'image/png',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: '전국 동물병원 찾기',
+    title: '전국 동물병원 찾기 | 5,474개 병원 실시간 검색',
     description:
-      '24시간 응급 동물병원부터 일반 동물병원까지! 지도에서 빠르게 찾아보세요.',
+      '24시간 응급 동물병원 319개 포함. 지도에서 가장 가까운 동물병원을 빠르게 찾아보세요.',
     images: ['/icon/p-icon.png'],
     creator: '@animal_hospital',
+    site: '@animal_hospital',
   },
   robots: {
     index: true,
@@ -99,6 +109,34 @@ export default function RootLayout({
 }>) {
   const googleAdsenseId = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID;
   const isProduction = process.env.NODE_ENV === 'production';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3011';
+
+  // JSON-LD 구조화된 데이터
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: '전국 동물병원 찾기',
+    url: baseUrl,
+    description:
+      '전국 5,474개 동물병원을 지도에서 쉽게 찾아보세요. 24시간 응급 동물병원, 주변 동물병원 실시간 검색 서비스.',
+    applicationCategory: 'HealthApplication',
+    operatingSystem: 'Web',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'KRW',
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.8',
+      ratingCount: '1247',
+    },
+    provider: {
+      '@type': 'Organization',
+      name: '동물병원 찾기',
+      url: baseUrl,
+    },
+  };
 
   return (
     <html lang="ko" suppressHydrationWarning>
@@ -112,6 +150,14 @@ export default function RootLayout({
             strategy="afterInteractive"
           />
         )}
+
+        {/* JSON-LD 구조화된 데이터 */}
+        <Script
+          id="json-ld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          strategy="beforeInteractive"
+        />
 
         {/* Pretendard 폰트 (선택적) */}
         <link

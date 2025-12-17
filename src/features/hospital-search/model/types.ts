@@ -10,5 +10,7 @@ export interface SearchBarProps {
   onSearch?: (query: string) => void;
   onSubmit?: (query: string) => void;
   onLocationClick?: () => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
   placeholder?: string;
 }

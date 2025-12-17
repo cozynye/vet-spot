@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Map, MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
 import { useKakaoLoader } from '@/features/hospital-map/hooks/useKakaoLoader';
 import { useGeolocation } from '@/features/hospital-map/hooks/useGeolocation';
@@ -9,31 +9,26 @@ import { SEOUL_CENTER } from '@/shared/config/constants';
 import type { Coordinates } from '@/shared/types/hospital';
 import type { Hospital } from '@/entities/hospital/model/types';
 
-interface HospitalMapProps {
+interface HospitalMapWithCircleProps {
   initialCenter?: Coordinates;
   searchMarker?: { position: Coordinates; name: string } | null;
   onLocationChange?: (location: Coordinates) => void;
-  onVisibleHospitalsChange?: (hospitals: Hospital[]) => void; // 화면에 보이는 병원 변경 시
-  zoomLevel?: number; // 줌 레벨 (1-14)
-  showLocationButton?: boolean; // 현재 위치 버튼 표시 여부
+  zoomLevel?: number;
 }
 
-export default function HospitalMap({
+export default function HospitalMapWithCircle({
   initialCenter = SEOUL_CENTER,
   searchMarker,
   onLocationChange,
-  onVisibleHospitalsChange,
-  zoomLevel = 5, // 기본값: 약 2-3km 범위
-  showLocationButton = true, // 기본값: 표시
-}: HospitalMapProps) {
-  // Kakao Maps SDK 로드
+  zoomLevel = 5,
+}: HospitalMapWithCircleProps) {
   useKakaoLoader();
 
-  // initialCenter가 변경될 때마다 center 업데이트
   const [center, setCenter] = useState(initialCenter);
   const [level, setLevel] = useState(zoomLevel);
   const [map, setMap] = useState<kakao.maps.Map | null>(null);
   const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null);
+  const [circle, setCircle] = useState<kakao.maps.Circle | null>(null);
   const { location, isLoading, error, getCurrentLocation } = useGeolocation();
   const { hospitals, isLoading: isLoadingHospitals, loadHospitals } = useHospitals();
 
@@ -41,7 +36,6 @@ export default function HospitalMap({
   useEffect(() => {
     if (initialCenter.lat !== center.lat || initialCenter.lng !== center.lng) {
       setCenter(initialCenter);
-      // 검색 후 위치 변경 시 병원 로드
       loadHospitals(initialCenter);
     }
   }, [initialCenter.lat, initialCenter.lng]);
@@ -60,46 +54,60 @@ export default function HospitalMap({
   useEffect(() => {
     if (location) {
       setCenter(location);
-      setLevel(4); // 현재 위치로 이동 시 확대
+      setLevel(4);
       onLocationChange?.(location);
     }
   }, [location, onLocationChange]);
 
-  // 지도 로드 시 병원 데이터 로드
-  useEffect(() => {
-    if (map) {
-      loadHospitals(center);
-    }
-  }, [map, loadHospitals]);
-
-  // 지도에 보이는 병원만 필터링해서 부모에게 전달
-  const updateVisibleHospitals = (currentMap: kakao.maps.Map) => {
-    if (!currentMap || !onVisibleHospitalsChange) return;
-
-    // 현재 지도 영역 가져오기
-    const bounds = currentMap.getBounds();
-
-    // 지도 영역 안에 있는 병원만 필터링
-    const visibleHospitals = hospitals.filter((hospital) => {
-      const position = new window.kakao.maps.LatLng(
-        hospital.coordinates.lat,
-        hospital.coordinates.lng
-      );
-      return bounds.contain(position);
-    });
-
-    onVisibleHospitalsChange(visibleHospitals);
+  // 줌 레벨에 따른 Circle 반경 계산 (미터 단위)
+  const getRadiusForZoomLevel = (zoomLevel: number): number => {
+    if (zoomLevel <= 1) return 50;
+    if (zoomLevel <= 2) return 100;
+    if (zoomLevel <= 3) return 200;
+    if (zoomLevel <= 4) return 300;
+    if (zoomLevel <= 5) return 500;
+    if (zoomLevel <= 6) return 700;
+    if (zoomLevel <= 7) return 1000;
+    if (zoomLevel <= 8) return 1500;
+    if (zoomLevel <= 9) return 2000;
+    if (zoomLevel <= 10) return 3000;
+    if (zoomLevel <= 11) return 5000;
+    if (zoomLevel <= 12) return 7000;
+    if (zoomLevel <= 13) return 10000;
+    return 15000;
   };
 
-  // 병원 목록 변경 시 보이는 병원 업데이트
-  useEffect(() => {
-    if (map) {
-      updateVisibleHospitals(map);
+  // Circle 생성/업데이트 함수 - 항상 지도의 현재 중심에 고정
+  const updateCircle = useCallback((map: kakao.maps.Map, zoomLevel: number) => {
+    // 기존 Circle 제거
+    if (circle) {
+      circle.setMap(null);
     }
-  }, [hospitals, map]);
 
-  // 위치 변경 시 중심점 업데이트 및 병원 재로드
-  const handleCenterChange = (map: kakao.maps.Map) => {
+    // 지도의 현재 중심 좌표 가져오기
+    const mapCenter = map.getCenter();
+    const radius = getRadiusForZoomLevel(zoomLevel);
+
+    // 새 Circle 생성
+    const newCircle = new kakao.maps.Circle({
+      center: mapCenter, // 지도의 현재 중심 사용
+      radius: radius,
+      strokeWeight: 2,
+      strokeColor: '#10b981',
+      strokeOpacity: 0.8,
+      strokeStyle: 'solid',
+      fillColor: '#10b981',
+      fillOpacity: 0.15,
+    });
+
+    newCircle.setMap(map);
+    setCircle(newCircle);
+  }, [circle]);
+
+  // 지도 중심 변경 시 Circle 업데이트
+  const handleCenterChanged = (map: kakao.maps.Map) => {
+    updateCircle(map, map.getLevel());
+
     const latlng = map.getCenter();
     const newCenter = {
       lat: latlng.getLat(),
@@ -108,7 +116,15 @@ export default function HospitalMap({
     onLocationChange?.(newCenter);
   };
 
-  // 지도 이동 완료 시 병원 재로드 및 보이는 병원 업데이트 (드래그 종료 시)
+  // 지도 로드 시 병원 데이터 로드 및 Circle 생성
+  useEffect(() => {
+    if (map) {
+      loadHospitals(center);
+      updateCircle(map, level);
+    }
+  }, [map]);
+
+  // 지도 이동 완료 시 병원 재로드
   const handleIdle = (map: kakao.maps.Map) => {
     const latlng = map.getCenter();
     const newCenter = {
@@ -116,10 +132,10 @@ export default function HospitalMap({
       lng: latlng.getLng(),
     };
     loadHospitals(newCenter);
-    updateVisibleHospitals(map);
+    updateCircle(map, map.getLevel()); // Circle도 업데이트
   };
 
-  // 줌 레벨 변경 시 병원 재로드 및 보이는 병원 업데이트
+  // 줌 레벨 변경 시 병원 재로드 및 Circle 업데이트
   const handleZoomChanged = (map: kakao.maps.Map) => {
     const newLevel = map.getLevel();
     setLevel(newLevel);
@@ -129,14 +145,23 @@ export default function HospitalMap({
       lng: latlng.getLng(),
     };
     loadHospitals(newCenter);
-    updateVisibleHospitals(map);
+    updateCircle(map, newLevel); // Circle 반경 업데이트
   };
+
+  // 컴포넌트 언마운트 시 Circle 정리
+  useEffect(() => {
+    return () => {
+      if (circle) {
+        circle.setMap(null);
+      }
+    };
+  }, [circle]);
 
   return (
     <div className="relative w-full h-full">
       {/* 지도 */}
       <Map
-        id="hospital-map"
+        id="hospital-map-with-circle"
         center={center}
         level={level}
         style={{
@@ -144,7 +169,7 @@ export default function HospitalMap({
           height: '100%',
         }}
         onCreate={setMap}
-        onCenterChanged={handleCenterChange}
+        onCenterChanged={handleCenterChanged}
         onZoomChanged={handleZoomChanged}
         onIdle={handleIdle}
       >
@@ -242,39 +267,37 @@ export default function HospitalMap({
       {/* 지도 컨트롤 */}
       <div className="absolute bottom-6 right-6 z-10 space-y-2">
         {/* 현재 위치로 이동 버튼 */}
-        {showLocationButton && (
-          <button
-            onClick={handleMoveToCurrentLocation}
-            disabled={isLoading}
-            className="w-12 h-12 rounded-full glass hover:bg-white/80 transition-all duration-300 shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group"
-            aria-label="현재 위치로 이동"
-            title="현재 위치로 이동"
-          >
-            {isLoading ? (
-              <div className="w-5 h-5 border-2 border-hospital-primary border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <svg
-                className="w-6 h-6 text-hospital-primary group-hover:scale-110 transition-transform"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-            )}
-          </button>
-        )}
+        <button
+          onClick={handleMoveToCurrentLocation}
+          disabled={isLoading}
+          className="w-12 h-12 rounded-full glass hover:bg-white/80 transition-all duration-300 shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group"
+          aria-label="현재 위치로 이동"
+          title="현재 위치로 이동"
+        >
+          {isLoading ? (
+            <div className="w-5 h-5 border-2 border-hospital-primary border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <svg
+              className="w-6 h-6 text-hospital-primary group-hover:scale-110 transition-transform"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+          )}
+        </button>
 
         {/* 줌 인 버튼 */}
         <button

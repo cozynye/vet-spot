@@ -39,3 +39,13 @@ next-env.d.ts
 # IDE
 .vscode
 .idea
+
+# playwright
+/test-results/
+/playwright-report/
+/playwright/.auth/
+*.png
+*.jpg
+*.jpeg
+*.webm
+*.mp4

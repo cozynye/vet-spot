@@ -9,6 +9,8 @@ export default function SearchBar({
   onSearch,
   onSubmit,
   onLocationClick,
+  onFocus,
+  onBlur,
   placeholder = '병원 이름이나 주소를 검색하세요...',
 }: SearchBarProps) {
   const [internalQuery, setInternalQuery] = useState('');
@@ -82,6 +84,8 @@ export default function SearchBar({
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onFocus={onFocus}
+            onBlur={onBlur}
             placeholder={placeholder}
             className="flex-1 bg-transparent border-none outline-none text-hospital-foreground placeholder:text-hospital-muted text-base"
           />
