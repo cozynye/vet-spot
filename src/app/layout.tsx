@@ -61,9 +61,9 @@ export const metadata: Metadata = {
     siteName: "동물병원 찾기",
     images: [
       {
-        url: "/icon/p-icon.png",
-        width: 1200,
-        height: 630,
+        url: "/images/og-image.png",
+        width: 2848,
+        height: 1504,
         alt: `동물병원 찾기 - 전국 ${HOSPITAL_STATS.totalFormatted}개 동물병원 실시간 검색 서비스`,
         type: "image/png",
       },
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
     title: `전국 동물병원 찾기 | ${HOSPITAL_STATS.totalFormatted}개 병원 실시간 검색`,
     description:
       `24시간 응급 동물병원 ${HOSPITAL_STATS.emergency24h}개 포함. 지도에서 가장 가까운 동물병원을 빠르게 찾아보세요.`,
-    images: ["/icon/p-icon.png"],
+    images: ["/images/og-image.png"],
     creator: "@animal_hospital",
     site: "@animal_hospital",
   },

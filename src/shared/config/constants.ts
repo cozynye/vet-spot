@@ -27,4 +27,5 @@ export const SITE_INFO = {
   name: '동물병원 찾기',
   title: '전국 동물병원 찾기 | 우리동네 동물병원 지도',
   description: '전국 동물병원을 지도에서 찾아보세요. 주소, 전화번호, 진료시간 정보 제공. 내 주변 동물병원 검색.',
+  copyright: '© 2024 Cozy 동물병원 찾기. All rights reserved.',
 } as const;
