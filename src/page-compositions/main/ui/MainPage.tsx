@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Header from "@/widgets/header/ui/Header";
 import HospitalMap from "@/widgets/map-view/ui/HospitalMap";
 import type { Coordinates } from "@/shared/types/hospital";
@@ -68,69 +69,45 @@ export default function MainPage() {
                   }}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-hospital-primary text-white hover:bg-hospital-primary/90 transition-colors"
                 >
-                  <svg
+                  <Image
+                    src="/icon/search.svg"
+                    alt="검색"
+                    width={20}
+                    height={20}
                     className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
+                  />
                 </button>
               </div>
 
               <div className="flex flex-wrap gap-3">
                 <div className="flex items-center gap-2 px-4 py-2 rounded-lg glass">
-                  <svg
+                  <Image
+                    src="/icon/check.svg"
+                    alt="체크"
+                    width={20}
+                    height={20}
                     className="w-5 h-5 text-hospital-primary"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                  />
                   <span className="text-sm font-medium">실시간 검색</span>
                 </div>
                 <div className="flex items-center gap-2 px-4 py-2 rounded-lg glass">
-                  <svg
+                  <Image
+                    src="/icon/location.svg"
+                    alt="위치"
+                    width={20}
+                    height={20}
                     className="w-5 h-5 text-hospital-primary"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                  </svg>
+                  />
                   <span className="text-sm font-medium">위치 기반</span>
                 </div>
                 <div className="flex items-center gap-2 px-4 py-2 rounded-lg glass">
-                  <svg
+                  <Image
+                    src="/icon/share.svg"
+                    alt="공유"
+                    width={20}
+                    height={20}
                     className="w-5 h-5 text-hospital-primary"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-                    />
-                  </svg>
+                  />
                   <span className="text-sm font-medium">위치 공유</span>
                 </div>
               </div>
@@ -180,19 +157,13 @@ export default function MainPage() {
                   <p className="text-3xl font-bold text-gradient">5,474</p>
                 </div>
                 <div className="w-12 h-12 rounded-lg gradient-primary flex items-center justify-center">
-                  <svg
+                  <Image
+                    src="/icon/hospital.svg"
+                    alt="병원"
+                    width={24}
+                    height={24}
                     className="w-6 h-6 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                    />
-                  </svg>
+                  />
                 </div>
               </div>
               <p className="text-xs text-hospital-muted">
@@ -213,19 +184,13 @@ export default function MainPage() {
                   <p className="text-3xl font-bold text-gradient">약 320+</p>
                 </div>
                 <div className="w-12 h-12 rounded-lg gradient-soft flex items-center justify-center">
-                  <svg
+                  <Image
+                    src="/icon/clock.svg"
+                    alt="시계"
+                    width={24}
+                    height={24}
                     className="w-6 h-6 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                  />
                 </div>
               </div>
               <p className="text-xs text-hospital-muted">

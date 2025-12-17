@@ -107,24 +107,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const googleAdsenseId = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID;
-  const isProduction = process.env.NODE_ENV === "production";
-
   return (
     <html lang="ko" suppressHydrationWarning>
       <head suppressHydrationWarning>
         {/* Google AdSense Meta Tag */}
         <meta name="google-adsense-account" content="ca-pub-1818226442756268" />
-
-        {/* Google AdSense (프로덕션에서만) */}
-        {isProduction && googleAdsenseId && (
-          <Script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${googleAdsenseId}`}
-            crossOrigin="anonymous"
-            strategy="afterInteractive"
-          />
-        )}
 
         {/* JSON-LD 구조화된 데이터 */}
         <Script
