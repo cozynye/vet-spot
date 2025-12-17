@@ -1,0 +1,199 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 검색 결과 리스트 스크롤바 커스텀 (3px 고정) */
+.card-glass::-webkit-scrollbar,
+.glass::-webkit-scrollbar {
+  width: 3px;
+}
+
+.card-glass::-webkit-scrollbar-track,
+.glass::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.card-glass::-webkit-scrollbar-thumb,
+.glass::-webkit-scrollbar-thumb {
+  background-color: #10b981;
+  border-radius: 3px;
+}
+
+.card-glass::-webkit-scrollbar-thumb:hover,
+.glass::-webkit-scrollbar-thumb:hover {
+  background-color: #059669;
+}
+
+@layer base {
+  :root {
+    /* Color Tokens */
+    --primary: 16 185 129;          /* #10b981 - Green */
+    --primary-dark: 5 150 105;      /* #059669 */
+    --primary-light: 52 211 153;    /* #34d399 */
+    --secondary: 59 130 246;        /* #3b82f6 - Blue */
+    --accent: 245 158 11;           /* #f59e0b - Orange */
+    --background: 248 250 252;      /* #f8fafc */
+    --foreground: 15 23 42;         /* #0f172a */
+    --muted: 100 116 139;           /* #64748b */
+
+    /* Spacing */
+    --header-height: 4rem;
+    --search-height: 5rem;
+  }
+
+  body {
+    @apply bg-hospital-background text-hospital-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Segoe UI', 'Roboto', sans-serif;
+  }
+
+  /* 부드러운 스크롤 */
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* Glassmorphism 효과 */
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
+  .glass-dark {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Gradient 배경 */
+  .gradient-primary {
+    background: linear-gradient(135deg, rgb(16 185 129) 0%, rgb(59 130 246) 100%);
+  }
+
+  .gradient-accent {
+    background: linear-gradient(135deg, rgb(245 158 11) 0%, rgb(239 68 68) 100%);
+  }
+
+  .gradient-soft {
+    background: linear-gradient(135deg, rgb(167 139 250) 0%, rgb(139 92 246) 100%);
+  }
+
+  /* 카드 스타일 */
+  .card {
+    @apply rounded-xl bg-white p-6 shadow-sm hover:shadow-md transition-shadow duration-300;
+  }
+
+  .card-glass {
+    @apply glass rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300;
+  }
+
+  /* 버튼 스타일 */
+  .btn-primary {
+    @apply px-4 py-2 rounded-lg bg-hospital-primary text-white font-medium;
+    @apply hover:bg-hospital-primary-dark transition-all duration-300;
+    @apply active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 rounded-lg bg-hospital-secondary text-white font-medium;
+    @apply hover:opacity-90 transition-all duration-300;
+    @apply active:scale-95;
+  }
+
+  .btn-outline {
+    @apply px-4 py-2 rounded-lg border-2 border-hospital-primary text-hospital-primary font-medium;
+    @apply hover:bg-hospital-primary hover:text-white transition-all duration-300;
+    @apply active:scale-95;
+  }
+
+  /* 인풋 스타일 */
+  .input-search {
+    @apply w-full px-4 py-3 rounded-lg border border-gray-300;
+    @apply focus:outline-none focus:ring-2 focus:ring-hospital-primary focus:border-transparent;
+    @apply transition-all duration-300;
+    @apply placeholder:text-gray-400;
+  }
+
+  /* 애니메이션 */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.2s ease-out;
+  }
+}
+
+@layer utilities {
+  /* 커스텀 유틸리티 */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-hospital-primary to-hospital-secondary;
+  }
+
+  .shadow-glow {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+  }
+
+  .shadow-glow-blue {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+}
+
+/* 키프레임 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 스크롤바 커스텀 (Webkit) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(16 185 129);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(5 150 105);
+}
