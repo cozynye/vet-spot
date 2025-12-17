@@ -8,21 +8,24 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/private/', '/admin/'],
+        disallow: ['/api/', '/admin/', '/_next/'],
       },
       {
         userAgent: 'Googlebot',
         allow: '/',
+        disallow: ['/api/', '/admin/', '/_next/'],
         crawlDelay: 0,
       },
       {
         userAgent: 'Yeti', // 네이버 봇
         allow: '/',
+        disallow: ['/api/', '/admin/', '/_next/'],
         crawlDelay: 0,
       },
       {
         userAgent: 'Bingbot',
         allow: '/',
+        disallow: ['/api/', '/admin/', '/_next/'],
         crawlDelay: 1,
       },
     ],
