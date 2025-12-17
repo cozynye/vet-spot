@@ -159,7 +159,7 @@ export default function SearchMapPage() {
     <div className="h-screen flex flex-col overflow-hidden">
       {/* 상단 헤더 바 */}
       <div className="absolute top-0 left-0 right-0 z-50 glass border-b border-white/20">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1400px] mx-auto px-4 tablet:px-6 pc:px-8">
           <div className="flex items-center justify-between h-16">
             {/* 로고 & 제목 */}
             <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
@@ -188,7 +188,7 @@ export default function SearchMapPage() {
                 <h1 className="text-xl font-bold text-gradient">
                   상세 찾기
                 </h1>
-                <p className="text-xs text-hospital-muted hidden sm:block">
+                <p className="text-xs text-hospital-muted hidden tablet:block">
                   주변 동물병원을 반경 기반으로 검색하세요
                 </p>
               </div>
@@ -212,7 +212,7 @@ export default function SearchMapPage() {
                   d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                 />
               </svg>
-              <span className="hidden sm:inline">홈으로</span>
+              <span className="hidden tablet:inline">홈으로</span>
             </Link>
           </div>
         </div>
@@ -315,7 +315,7 @@ export default function SearchMapPage() {
         {/* 병원 리스트 팝업 */}
         {showHospitalList && (
           <div className="mb-3 animate-fade-in">
-            <div className="card-glass overflow-hidden max-w-md w-[90vw] md:w-96">
+            <div className="card-glass overflow-hidden max-w-md w-[90vw] tablet:w-96">
               {/* 헤더 */}
               <div className="px-4 py-3 border-b border-white/20 bg-gradient-to-r from-hospital-primary/10 to-hospital-secondary/10">
                 <div className="flex items-center justify-between">
@@ -348,9 +348,9 @@ export default function SearchMapPage() {
               </div>
 
               {/* 병원 리스트 */}
-              <div className="max-h-[60vh] md:max-h-96 overflow-y-auto">
+              <div className="max-h-[60vh] tablet:max-h-96 overflow-y-auto">
                 {visibleHospitals.length === 0 ? (
-                  <div className="px-2.5 md:px-4 py-8 text-center text-hospital-muted">
+                  <div className="px-2.5 tablet:px-4 py-8 text-center text-hospital-muted">
                     <svg
                       className="w-12 h-12 mx-auto mb-3 text-hospital-muted/50"
                       fill="none"
@@ -372,7 +372,7 @@ export default function SearchMapPage() {
                     {visibleHospitals.map((hospital) => (
                       <div
                         key={hospital.id}
-                        className="px-2.5 md:px-4 py-3 hover:bg-white/5 transition-colors cursor-pointer"
+                        className="px-2.5 tablet:px-4 py-3 hover:bg-white/5 transition-colors cursor-pointer"
                         onClick={() => {
                           // 병원 위치로 지도 이동
                           setMapCenter(hospital.coordinates);

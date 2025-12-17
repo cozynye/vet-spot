@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Header from '@/widgets/header/ui/Header';
-import HospitalMap from '@/widgets/map-view/ui/HospitalMap';
-import type { Coordinates } from '@/shared/types/hospital';
-import { SEOUL_CENTER } from '@/shared/config/constants';
+import { useState } from "react";
+import Header from "@/widgets/header/ui/Header";
+import HospitalMap from "@/widgets/map-view/ui/HospitalMap";
+import type { Coordinates } from "@/shared/types/hospital";
+import { SEOUL_CENTER } from "@/shared/config/constants";
 
 export default function MainPage() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleLocationChange = (location: Coordinates) => {
-    console.log('위치 변경:', location);
+    console.log("위치 변경:", location);
   };
 
   return (
@@ -19,22 +19,26 @@ export default function MainPage() {
       <Header />
 
       {/* Hero 섹션 - 서비스 소개 & 지도 미리보기 */}
-      <section className="py-16 bg-gradient-to-br from-hospital-background to-white">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+      <section className="py-16 bg-gradient-to-br from-hospital-background to-white tablet:py-8">
+        <div className="max-w-[1200px] mx-auto px-4 tablet:px-6 pc:px-8">
+          <div className="grid grid-cols-1 pc:grid-cols-2 gap-8 pc:gap-12 items-center">
             {/* 왼쪽: 서비스 설명 & 검색 */}
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-hospital-primary/10 border border-hospital-primary/20">
-                <span className="text-sm font-medium text-hospital-primary">전국 5,474개 동물병원</span>
+                <span className="text-sm font-medium text-hospital-primary">
+                  전국 5,474개 동물병원
+                </span>
               </div>
 
-              <h2 className="text-4xl lg:text-5xl font-bold text-gradient leading-tight">
-                우리 동네<br />
+              <h2 className="text-4xl pc:text-5xl font-bold text-gradient leading-tight">
+                우리 동네
+                <br />
                 동물병원 찾기
               </h2>
 
               <p className="text-lg text-hospital-muted leading-relaxed">
-                전국의 동물병원 정보를 한눈에 확인하세요.<br />
+                전국의 동물병원 정보를 한눈에 확인하세요.
+                <br />
                 지도에서 간편하게 검색하고, 위치를 공유할 수 있습니다.
               </p>
 
@@ -46,8 +50,10 @@ export default function MainPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' && searchQuery.trim()) {
-                      window.location.href = `/search-map?q=${encodeURIComponent(searchQuery.trim())}`;
+                    if (e.key === "Enter" && searchQuery.trim()) {
+                      window.location.href = `/search-map?q=${encodeURIComponent(
+                        searchQuery.trim()
+                      )}`;
                     }
                   }}
                   className="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:border-hospital-primary focus:ring-2 focus:ring-hospital-primary/20 transition-all outline-none"
@@ -55,33 +61,75 @@ export default function MainPage() {
                 <button
                   onClick={() => {
                     if (searchQuery.trim()) {
-                      window.location.href = `/search-map?q=${encodeURIComponent(searchQuery.trim())}`;
+                      window.location.href = `/search-map?q=${encodeURIComponent(
+                        searchQuery.trim()
+                      )}`;
                     }
                   }}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-hospital-primary text-white hover:bg-hospital-primary/90 transition-colors"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
                   </svg>
                 </button>
               </div>
 
               <div className="flex flex-wrap gap-3">
                 <div className="flex items-center gap-2 px-4 py-2 rounded-lg glass">
-                  <svg className="w-5 h-5 text-hospital-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-5 h-5 text-hospital-primary"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   <span className="text-sm font-medium">실시간 검색</span>
                 </div>
                 <div className="flex items-center gap-2 px-4 py-2 rounded-lg glass">
-                  <svg className="w-5 h-5 text-hospital-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <svg
+                    className="w-5 h-5 text-hospital-primary"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
                   </svg>
                   <span className="text-sm font-medium">위치 기반</span>
                 </div>
                 <div className="flex items-center gap-2 px-4 py-2 rounded-lg glass">
-                  <svg className="w-5 h-5 text-hospital-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  <svg
+                    className="w-5 h-5 text-hospital-primary"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                    />
                   </svg>
                   <span className="text-sm font-medium">위치 공유</span>
                 </div>
@@ -90,7 +138,10 @@ export default function MainPage() {
 
             {/* 오른쪽: 지도 미리보기 */}
             <div className="relative">
-              <div className="rounded-2xl overflow-hidden shadow-2xl border border-gray-200" style={{ height: '500px' }}>
+              <div
+                className="rounded-2xl overflow-hidden shadow-2xl border border-gray-200"
+                style={{ height: "500px" }}
+              >
                 <HospitalMap
                   initialCenter={SEOUL_CENTER}
                   onLocationChange={handleLocationChange}
@@ -108,7 +159,7 @@ export default function MainPage() {
         id="stats"
         className="py-16 bg-gradient-to-br from-hospital-background to-white"
       >
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1200px] mx-auto px-4 tablet:px-6 pc:px-8">
           <div className="text-center mb-12 animate-fade-in">
             <h2 className="text-3xl font-bold text-gradient mb-4">
               전국 동물병원 통계
@@ -118,7 +169,7 @@ export default function MainPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 tablet:grid-cols-2 gap-6 max-w-3xl mx-auto">
             {/* 통계 카드 1 - 총 동물병원 */}
             <div className="card-glass animate-slide-up">
               <div className="flex items-center justify-between mb-3">
@@ -150,7 +201,10 @@ export default function MainPage() {
             </div>
 
             {/* 통계 카드 2 - 24시 동물병원 */}
-            <div className="card-glass animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <div
+              className="card-glass animate-slide-up"
+              style={{ animationDelay: "0.1s" }}
+            >
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <p className="text-sm text-hospital-muted mb-2">
@@ -178,14 +232,13 @@ export default function MainPage() {
                 24시간 응급 진료 가능 병원
               </p>
             </div>
-
           </div>
         </div>
       </section>
 
       {/* 사용 가이드 (Placeholder) */}
       <section id="guide" className="py-16 bg-white">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1200px] mx-auto px-4 tablet:px-6 pc:px-8">
           <div className="text-center mb-12 animate-fade-in">
             <h2 className="text-3xl font-bold text-gradient mb-4">
               사용 가이드
@@ -195,7 +248,7 @@ export default function MainPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 tablet:grid-cols-3 gap-8">
             {/* 가이드 1 */}
             <div className="text-center animate-slide-up">
               <div className="w-16 h-16 mx-auto mb-4 rounded-2xl gradient-primary flex items-center justify-center shadow-glow">
@@ -208,7 +261,10 @@ export default function MainPage() {
             </div>
 
             {/* 가이드 2 */}
-            <div className="text-center animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <div
+              className="text-center animate-slide-up"
+              style={{ animationDelay: "0.1s" }}
+            >
               <div className="w-16 h-16 mx-auto mb-4 rounded-2xl gradient-soft flex items-center justify-center shadow-glow-blue">
                 <span className="text-2xl font-bold text-white">2</span>
               </div>
@@ -219,7 +275,10 @@ export default function MainPage() {
             </div>
 
             {/* 가이드 3 */}
-            <div className="text-center animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <div
+              className="text-center animate-slide-up"
+              style={{ animationDelay: "0.2s" }}
+            >
               <div className="w-16 h-16 mx-auto mb-4 rounded-2xl gradient-accent flex items-center justify-center shadow-glow">
                 <span className="text-2xl font-bold text-white">3</span>
               </div>
@@ -234,7 +293,7 @@ export default function MainPage() {
 
       {/* Footer */}
       <footer className="py-8 bg-hospital-foreground text-white">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1200px] mx-auto px-4 tablet:px-6 pc:px-8">
           <div className="text-center">
             <p className="text-sm text-gray-400">
               © 2024 동물병원 찾기. All rights reserved.

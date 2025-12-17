@@ -8,7 +8,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 glass border-b border-white/20 animate-fade-in">
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1200px] mx-auto px-4 tablet:px-6 pc:px-8">
         <div className="flex items-center justify-between h-16">
           {/* 로고 & 제목 */}
           <div className="flex items-center space-x-3">
@@ -25,17 +25,17 @@ export default function Header() {
 
             {/* 타이틀 */}
             <div>
-              <h1 className="text-xl font-bold text-gradient hidden sm:block">
+              <h1 className="text-xl font-bold text-gradient hidden tablet:block">
                 동물병원 찾기
               </h1>
-              <h1 className="text-lg font-bold text-gradient sm:hidden">
+              <h1 className="text-lg font-bold text-gradient tablet:hidden">
                 동물병원 찾기
               </h1>
             </div>
           </div>
 
           {/* 데스크탑 네비게이션 */}
-          <nav className="hidden md:flex items-center space-x-4">
+          <nav className="hidden tablet:flex items-center space-x-4">
             <a
               href="/search-map"
               className="px-6 py-2.5 rounded-lg text-sm font-medium glass hover:bg-white/50 transition-all duration-300 flex items-center gap-2 border border-hospital-primary/20 shadow-sm hover:shadow-md"
@@ -62,7 +62,7 @@ export default function Header() {
           {/* 모바일 메뉴 버튼 */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-white/50 transition-all duration-300"
+            className="tablet:hidden p-2 rounded-lg hover:bg-white/50 transition-all duration-300"
             aria-label="메뉴"
           >
             <svg
@@ -93,7 +93,7 @@ export default function Header() {
 
       {/* 모바일 메뉴 */}
       {isMenuOpen && (
-        <div className="md:hidden glass-dark border-t border-white/10 animate-slide-up">
+        <div className="tablet:hidden glass-dark border-t border-white/10 animate-slide-up">
           <div className="px-4 py-3">
             <a
               href="/search-map"

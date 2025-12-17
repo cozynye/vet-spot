@@ -60,7 +60,7 @@ export default function SearchBar({
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-4">
-      <div className="card-glass animate-scale-in h-[50px] md:h-[70px]">
+      <div className="card-glass animate-scale-in h-[50px] tablet:h-[70px]">
         <form onSubmit={handleSubmit} className="flex items-center gap-3 h-full">
           {/* 검색 아이콘 */}
           <div className="flex-shrink-0">
@@ -122,7 +122,7 @@ export default function SearchBar({
           {/* 검색 버튼 */}
           <button
             type="submit"
-            className="flex-shrink-0 px-4 py-2 md:px-6 md:py-2.5 rounded-lg gradient-primary text-white font-medium shadow-glow hover:opacity-90 transition-all duration-300 active:scale-95 text-sm md:text-base"
+            className="flex-shrink-0 px-4 py-2 tablet:px-6 tablet:py-2.5 rounded-lg gradient-primary text-white font-medium shadow-glow hover:opacity-90 transition-all duration-300 active:scale-95 text-sm tablet:text-base"
           >
             검색
           </button>
