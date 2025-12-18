@@ -1,5 +1,5 @@
-import Test5Page from '@/page-compositions/test5/ui/Test5Page';
+import MainPage from '@/page-compositions/main/ui/MainPage';
 
 export default function Page() {
-  return <Test5Page />;
+  return <MainPage />;
 }

@@ -51,6 +51,14 @@ export default function HospitalMap({
     setLevel(zoomLevel);
   }, [zoomLevel]);
 
+  // center 변경 시 지도 이동 (병원 클릭 시 등)
+  useEffect(() => {
+    if (map && center) {
+      const moveLatLon = new window.kakao.maps.LatLng(center.lat, center.lng);
+      map.panTo(moveLatLon); // 부드럽게 이동
+    }
+  }, [map, center.lat, center.lng]);
+
   // 현재 위치로 이동
   const handleMoveToCurrentLocation = () => {
     getCurrentLocation();

@@ -1,322 +1,407 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
-import Header from "@/widgets/header/ui/Header";
+import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import HospitalMap from "@/widgets/map-view/ui/HospitalMap";
-import type { Coordinates } from "@/shared/types/hospital";
-import { SEOUL_CENTER, HOSPITAL_STATS } from "@/shared/config/constants";
+import { HOSPITAL_STATS, SITE_INFO, SEOUL_CENTER } from "@/shared/config/constants";
+
+// Number count-up animation hook
+function useCountUp(end: number, duration: number = 2) {
+  const [count, setCount] = useState(0);
+
+  const animate = () => {
+    const start = 0;
+    const increment = end / (duration * 60); // 60fps
+    let current = start;
+
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= end) {
+        setCount(end);
+        clearInterval(timer);
+      } else {
+        setCount(Math.floor(current));
+      }
+    }, 1000 / 60);
+
+    return () => clearInterval(timer);
+  };
+
+  return { count, animate };
+}
 
 export default function MainPage() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+  const { scrollY } = useScroll();
+  const heroY = useTransform(scrollY, [0, 500], [0, -50]);
+  const mapY = useTransform(scrollY, [0, 500], [0, -10]);
 
-  const handleLocationChange = (location: Coordinates) => {
-    console.log("위치 변경:", location);
+  // Stats section refs and animations
+  const statsRef = useRef(null);
+  const statsInView = useInView(statsRef, { once: true, margin: "-100px" });
+  const totalCount = useCountUp(HOSPITAL_STATS.total);
+  const emergencyCount = useCountUp(HOSPITAL_STATS.emergency24h);
+
+  useEffect(() => {
+    if (statsInView) {
+      totalCount.animate();
+      emergencyCount.animate();
+    }
+  }, [statsInView]);
+
+  // Guide section refs
+  const guideRef = useRef(null);
+  const guideInView = useInView(guideRef, { once: true, margin: "-100px" });
+
+  // Search functionality
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      router.push(`/search-map?q=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      router.push("/search-map");
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* 헤더 */}
-      <Header />
+    <div className="min-h-screen bg-hospital-background overflow-x-hidden">
+      {/* Header with Fade-in */}
+      <motion.header
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200"
+      >
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <Link href="/" className="text-xl font-bold text-hospital-primary">
+            동물병원 찾기
+          </Link>
+          <nav className="hidden md:flex gap-6">
+            <motion.div whileHover={{ x: 2 }} whileTap={{ scale: 0.95 }}>
+              <Link href="/search-map" className="text-sm font-medium text-hospital-foreground hover:text-hospital-primary transition-colors">
+                병원 검색
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ x: 2 }} whileTap={{ scale: 0.95 }}>
+              <Link href="/" className="text-sm font-medium text-hospital-foreground hover:text-hospital-primary transition-colors">
+                홈으로
+              </Link>
+            </motion.div>
+          </nav>
+        </div>
+      </motion.header>
 
-      {/* Hero 섹션 - 서비스 소개 & 지도 미리보기 */}
-      <section className="py-16 bg-gradient-to-br from-hospital-background to-white tablet:py-8">
-        <div className="max-w-[1200px] mx-auto px-4 tablet:px-6 pc:px-8">
-          <div className="grid grid-cols-1 pc:grid-cols-2 gap-8 pc:gap-12 items-center">
-            {/* 왼쪽: 서비스 설명 & 검색 */}
-            <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-hospital-primary/10 border border-hospital-primary/20">
-                <span className="text-sm font-medium text-hospital-primary">
-                  전국 {HOSPITAL_STATS.totalFormatted}개 동물병원
-                </span>
-              </div>
+      {/* Hero Section - Asymmetric Layout with Parallax */}
+      <section className="relative min-h-[600px] md:min-h-[700px] flex items-center overflow-hidden">
+        {/* Background Gradient Blob */}
+        <motion.div
+          style={{ y: useTransform(scrollY, [0, 500], [0, 100]) }}
+          className="absolute inset-0 bg-gradient-to-br from-hospital-primary/10 via-hospital-secondary/5 to-hospital-accent/10 -z-10"
+        />
 
-              <h2 className="text-4xl pc:text-5xl font-bold text-gradient leading-tight">
-                우리 동네
-                <br />
-                동물병원 찾기
-              </h2>
-
-              <p className="text-lg text-hospital-muted leading-relaxed">
-                전국의 동물병원 정보를 한눈에 확인하세요.
-                <br />
-                지도에서 간편하게 검색하고, 위치를 공유할 수 있습니다.
-              </p>
-
-              {/* 간단한 검색바 */}
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="지역명으로 검색 (예: 서울시청, 강남역)"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && searchQuery.trim()) {
-                      window.location.href = `/search-map?q=${encodeURIComponent(
-                        searchQuery.trim()
-                      )}`;
-                    }
-                  }}
-                  className="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:border-hospital-primary focus:ring-2 focus:ring-hospital-primary/20 transition-all outline-none"
-                />
-                <button
-                  onClick={() => {
-                    if (searchQuery.trim()) {
-                      window.location.href = `/search-map?q=${encodeURIComponent(
-                        searchQuery.trim()
-                      )}`;
-                    }
-                  }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-hospital-primary text-white hover:bg-hospital-primary/90 transition-colors"
-                >
-                  <Image
-                    src="/icon/search.svg"
-                    alt="검색"
-                    width={20}
-                    height={20}
-                    className="w-5 h-5"
-                  />
-                </button>
-              </div>
-
-              <div className="flex flex-wrap gap-3">
-                <div className="flex items-center gap-2 px-4 py-2 rounded-lg glass">
-                  <Image
-                    src="/icon/check.svg"
-                    alt="체크"
-                    width={20}
-                    height={20}
-                    className="w-5 h-5 text-hospital-primary"
-                  />
-                  <span className="text-sm font-medium">실시간 검색</span>
-                </div>
-                <div className="flex items-center gap-2 px-4 py-2 rounded-lg glass">
-                  <Image
-                    src="/icon/location.svg"
-                    alt="위치"
-                    width={20}
-                    height={20}
-                    className="w-5 h-5 text-hospital-primary"
-                  />
-                  <span className="text-sm font-medium">위치 기반</span>
-                </div>
-                <div className="flex items-center gap-2 px-4 py-2 rounded-lg glass">
-                  <Image
-                    src="/icon/share.svg"
-                    alt="공유"
-                    width={20}
-                    height={20}
-                    className="w-5 h-5 text-hospital-primary"
-                  />
-                  <span className="text-sm font-medium">위치 공유</span>
-                </div>
-              </div>
-            </div>
-
-            {/* 오른쪽: 지도 미리보기 */}
-            <div className="relative">
-              <div
-                className="rounded-2xl overflow-hidden shadow-2xl border border-gray-200"
-                style={{ height: "500px" }}
+        <div className="container mx-auto px-6 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-8 items-center">
+            {/* Left Content - 60% (3/5 columns) with Parallax */}
+            <motion.div
+              style={{ y: heroY }}
+              className="md:col-span-3 z-10"
+            >
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
               >
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: 0.2 }}
+                  className="inline-block px-4 py-2 bg-hospital-primary/10 backdrop-blur-sm rounded-full mb-3 md:mb-6"
+                >
+                  <span className="text-xs md:text-sm font-medium text-hospital-primary">
+                    전국 {HOSPITAL_STATS.totalFormatted}개 동물병원
+                  </span>
+                </motion.div>
+
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+                  <motion.span
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                    className="block bg-gradient-to-r from-hospital-primary via-hospital-secondary to-hospital-accent bg-clip-text text-transparent"
+                  >
+                    우리 아이를 위한
+                  </motion.span>
+                  <motion.span
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                    className="block text-hospital-foreground"
+                  >
+                    가까운 병원
+                  </motion.span>
+                </h1>
+
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                  className="text-lg md:text-xl text-hospital-muted mb-8 leading-relaxed"
+                >
+                  24시간 응급 동물병원부터 일반 진료까지,
+                  <br />
+                  우리 동네 반려동물 병원을 빠르게 찾아보세요
+                </motion.p>
+
+                {/* Search Bar with Hover Effect */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.6 }}
+                  className="relative max-w-2xl"
+                >
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="지역명, 건물명, 도로명 주소 검색..."
+                    className="w-full px-6 py-4 pr-32 rounded-xl border-2 border-gray-200 focus:border-hospital-primary focus:outline-none text-base transition-all"
+                  />
+                  <motion.button
+                    onClick={handleSearch}
+                    whileHover={{ backgroundColor: "rgba(16, 185, 129, 0.9)" }}
+                    whileTap={{ scale: 0.98 }}
+                    className="absolute right-2 top-2 bottom-2 px-6 bg-hospital-primary text-white rounded-lg font-medium transition-all flex items-center justify-center shadow-lg hover:shadow-xl"
+                  >
+                    검색
+                  </motion.button>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.7 }}
+                  className="mt-6 flex gap-4 text-sm text-hospital-muted"
+                >
+                  <span className="flex items-center gap-1">
+                    <Image src="/icon/clock.svg" alt="24시" width={16} height={16} />
+                    24시 응급 {HOSPITAL_STATS.emergency24h}개
+                  </span>
+                  <span>•</span>
+                  <span>빠른 검색</span>
+                  <span>•</span>
+                  <span>상세 정보</span>
+                </motion.div>
+              </motion.div>
+            </motion.div>
+
+            {/* Right Map - 40% (2/5 columns) with Slow Parallax */}
+            <motion.div
+              style={{ y: mapY }}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="md:col-span-2"
+            >
+              <div className="rounded-2xl overflow-hidden shadow-2xl h-[400px] md:h-[500px]">
                 <HospitalMap
                   initialCenter={SEOUL_CENTER}
-                  onLocationChange={handleLocationChange}
                   zoomLevel={5}
                   showLocationButton={false}
                 />
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* 통계 섹션 (Placeholder) */}
-      <section
-        id="stats"
-        className="py-16 bg-gradient-to-br from-hospital-background to-white"
+      {/* Stats Section with Count-up Animation */}
+      <section ref={statsRef} className="py-20 px-6 bg-white">
+        <div className="container mx-auto max-w-5xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Total Hospitals Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={statsInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0 }}
+              whileHover={{ y: -4, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)" }}
+              className="p-8 rounded-2xl bg-gradient-to-br from-hospital-primary/5 to-hospital-secondary/5 border-2 border-hospital-primary/10 shadow-lg"
+            >
+              <div className="flex items-start gap-6">
+                <motion.div
+                  animate={statsInView ? { rotate: [0, 10, -10, 0] } : {}}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  className="p-4 bg-gradient-to-br from-hospital-primary to-hospital-secondary rounded-xl"
+                >
+                  <Image src="/icon/hospital.svg" alt="병원" width={32} height={32} className="brightness-0 invert" />
+                </motion.div>
+                <div>
+                  <div className="text-3xl md:text-5xl font-bold text-hospital-foreground mb-2">
+                    {statsInView ? totalCount.count.toLocaleString() : "0"}
+                  </div>
+                  <div className="text-hospital-muted font-medium">
+                    전국 동물병원
+                  </div>
+                  <p className="text-sm text-hospital-muted mt-2">
+                    믿을 수 있는 병원 정보
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* 24h Emergency Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={statsInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              whileHover={{ y: -4, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)" }}
+              className="p-8 rounded-2xl bg-gradient-to-br from-hospital-accent/5 to-hospital-primary/5 border-2 border-hospital-accent/10 shadow-lg"
+            >
+              <div className="flex items-start gap-6">
+                <motion.div
+                  animate={statsInView ? { rotate: [0, -10, 10, 0] } : {}}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                  className="p-4 bg-gradient-to-br from-hospital-accent to-hospital-primary rounded-xl"
+                >
+                  <Image src="/icon/clock.svg" alt="24시" width={32} height={32} className="brightness-0 invert" />
+                </motion.div>
+                <div>
+                  <div className="text-3xl md:text-5xl font-bold text-hospital-foreground mb-2">
+                    {statsInView ? emergencyCount.count : "0"}
+                  </div>
+                  <div className="text-hospital-muted font-medium">
+                    24시간 응급 병원
+                  </div>
+                  <p className="text-sm text-hospital-muted mt-2">
+                    긴급 상황 대비 가능
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Guide Section with Stagger Animation */}
+      <section ref={guideRef} className="py-20 px-6 bg-hospital-background">
+        <div className="container mx-auto max-w-6xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={guideInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
+              <span className="bg-gradient-to-r from-hospital-primary to-hospital-secondary bg-clip-text text-transparent">
+                이용 가이드
+              </span>
+            </h2>
+            <p className="text-center text-hospital-muted mb-12">
+              동물병원 찾기 서비스 사용 방법을 안내합니다
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Guide 1 */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={guideInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: 0 }}
+              whileHover={{ scale: 1.02, borderColor: "rgba(16, 185, 129, 0.5)" }}
+              className="p-8 bg-white rounded-2xl border-2 border-transparent shadow-sm hover:shadow-xl transition-all"
+            >
+              <motion.div
+                animate={guideInView ? { rotate: [0, 10, 0], scale: [1, 1.1, 1] } : {}}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="w-14 h-14 bg-gradient-to-br from-hospital-primary to-hospital-secondary rounded-xl flex items-center justify-center mb-4"
+              >
+                <Image src="/icon/search.svg" alt="검색" width={28} height={28} className="brightness-0 invert" />
+              </motion.div>
+              <h3 className="text-xl font-semibold mb-3 text-hospital-foreground">
+                주소로 검색하기
+              </h3>
+              <p className="text-hospital-muted leading-relaxed">
+                지역명, 건물명, 도로명 주소로 원하는 위치를 검색하세요. 검색 결과는 지도와 목록으로 확인할 수 있습니다.
+              </p>
+            </motion.div>
+
+            {/* Guide 2 */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={guideInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              whileHover={{ scale: 1.02, borderColor: "rgba(59, 130, 246, 0.5)" }}
+              className="p-8 bg-white rounded-2xl border-2 border-transparent shadow-sm hover:shadow-xl transition-all"
+            >
+              <motion.div
+                animate={guideInView ? { rotate: [0, -10, 0], scale: [1, 1.1, 1] } : {}}
+                transition={{ duration: 0.5, delay: 0.35 }}
+                className="w-14 h-14 bg-gradient-to-br from-hospital-secondary to-hospital-accent rounded-xl flex items-center justify-center mb-4"
+              >
+                <Image src="/icon/location.svg" alt="지도" width={28} height={28} className="brightness-0 invert" />
+              </motion.div>
+              <h3 className="text-xl font-semibold mb-3 text-hospital-foreground">
+                지도에서 보기
+              </h3>
+              <p className="text-hospital-muted leading-relaxed">
+                지도를 확대/축소하고 마커를 클릭하여 병원 정보를 확인하세요. 내 위치 기준으로 가까운 병원을 찾을 수 있습니다.
+              </p>
+            </motion.div>
+
+            {/* Guide 3 */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={guideInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              whileHover={{ scale: 1.02, borderColor: "rgba(245, 158, 11, 0.5)" }}
+              className="p-8 bg-white rounded-2xl border-2 border-transparent shadow-sm hover:shadow-xl transition-all"
+            >
+              <motion.div
+                animate={guideInView ? { rotate: [0, 10, 0], scale: [1, 1.1, 1] } : {}}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                className="w-14 h-14 bg-gradient-to-br from-hospital-accent to-hospital-primary rounded-xl flex items-center justify-center mb-4"
+              >
+                <Image src="/icon/hospital.svg" alt="병원" width={28} height={28} className="brightness-0 invert" />
+              </motion.div>
+              <h3 className="text-xl font-semibold mb-3 text-hospital-foreground">
+                병원 정보 확인
+              </h3>
+              <p className="text-hospital-muted leading-relaxed">
+                병원 목록에서 이름, 주소, 전화번호 등 상세 정보를 확인하세요. 24시간 응급 병원 여부도 표시됩니다.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer with Fade-in */}
+      <motion.footer
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className="bg-white border-t border-gray-200 py-12 px-6"
       >
-        <div className="max-w-[1200px] mx-auto px-4 tablet:px-6 pc:px-8">
-          <div className="text-center mb-12 animate-fade-in">
-            <h2 className="text-3xl font-bold text-gradient mb-4">
-              전국 동물병원 통계
-            </h2>
-            <p className="text-hospital-muted">
-              실시간 동물병원 정보를 확인하세요
-            </p>
+        <div className="container mx-auto max-w-6xl text-center">
+          <div className="text-xl font-bold text-hospital-primary mb-4">
+            동물병원 찾기
           </div>
-
-          <div className="grid grid-cols-1 tablet:grid-cols-2 gap-6 max-w-3xl mx-auto">
-            {/* 통계 카드 1 - 총 동물병원 */}
-            <div className="card-glass animate-slide-up">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <p className="text-sm text-hospital-muted mb-2">
-                    총 동물병원
-                  </p>
-                  <p className="text-3xl font-bold text-gradient">{HOSPITAL_STATS.totalFormatted}</p>
-                </div>
-                <div className="w-12 h-12 rounded-lg gradient-primary flex items-center justify-center">
-                  <Image
-                    src="/icon/hospital.svg"
-                    alt="병원"
-                    width={24}
-                    height={24}
-                    className="w-6 h-6 text-white"
-                  />
-                </div>
-              </div>
-              <p className="text-xs text-hospital-muted">
-                2025년 7월 기준, 행정안전부 인허가 데이터
-              </p>
-            </div>
-
-            {/* 통계 카드 2 - 24시 동물병원 */}
-            <div
-              className="card-glass animate-slide-up"
-              style={{ animationDelay: "0.1s" }}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <p className="text-sm text-hospital-muted mb-2">
-                    24시 동물병원
-                  </p>
-                  <p className="text-3xl font-bold text-gradient">약 320+</p>
-                </div>
-                <div className="w-12 h-12 rounded-lg gradient-soft flex items-center justify-center">
-                  <Image
-                    src="/icon/clock.svg"
-                    alt="시계"
-                    width={24}
-                    height={24}
-                    className="w-6 h-6 text-white"
-                  />
-                </div>
-              </div>
-              <p className="text-xs text-hospital-muted">
-                24시간 응급 진료 가능 병원
-              </p>
-            </div>
+          <p className="text-sm text-hospital-muted mb-6">
+            전국 동물병원 정보를 한눈에
+          </p>
+          <div className="text-xs text-hospital-muted">
+            {SITE_INFO.copyright}
           </div>
         </div>
-      </section>
-
-      {/* 사용 가이드 - 상세 찾기 기능 */}
-      <section id="guide" className="py-16 bg-white">
-        <div className="max-w-[1200px] mx-auto px-4 tablet:px-6 pc:px-8">
-          <div className="text-center mb-12 animate-fade-in">
-            <h2 className="text-3xl font-bold text-gradient mb-4">
-              상세 찾기 기능 가이드
-            </h2>
-            <p className="text-hospital-muted">
-              주소 검색부터 병원 정보 확인까지, 쉽고 빠르게 이용하세요
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 tablet:grid-cols-3 gap-8">
-            {/* 가이드 1 - 주소 검색 */}
-            <div className="text-center animate-slide-up">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl gradient-primary flex items-center justify-center shadow-glow">
-                <Image
-                  src="/icon/search.svg"
-                  alt="검색"
-                  width={32}
-                  height={32}
-                  className="w-8 h-8 text-white"
-                />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">주소로 검색하기</h3>
-              <p className="text-sm text-hospital-muted mb-3">
-                지역명, 건물명, 도로명 주소로 원하는 위치를 검색하세요
-              </p>
-              <div className="text-xs text-hospital-muted/70 bg-hospital-background rounded-lg px-3 py-2">
-                예: 서울시청, 강남역, 판교역로 235
-              </div>
-            </div>
-
-            {/* 가이드 2 - 지도에서 병원 확인 */}
-            <div
-              className="text-center animate-slide-up"
-              style={{ animationDelay: "0.1s" }}
-            >
-              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl gradient-soft flex items-center justify-center shadow-glow-blue">
-                <Image
-                  src="/icon/location.svg"
-                  alt="위치"
-                  width={32}
-                  height={32}
-                  className="w-8 h-8 text-white"
-                />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">지도에서 병원 보기</h3>
-              <p className="text-sm text-hospital-muted mb-3">
-                지도의 마커를 클릭하여 병원 상세 정보를 확인하세요
-              </p>
-              <div className="text-xs text-hospital-muted/70 bg-hospital-background rounded-lg px-3 py-2">
-                병원명, 주소, 전화번호 정보 제공
-              </div>
-            </div>
-
-            {/* 가이드 3 - 병원 리스트 */}
-            <div
-              className="text-center animate-slide-up"
-              style={{ animationDelay: "0.2s" }}
-            >
-              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl gradient-accent flex items-center justify-center shadow-glow">
-                <Image
-                  src="/icon/hospital.svg"
-                  alt="병원"
-                  width={32}
-                  height={32}
-                  className="w-8 h-8 text-white"
-                />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">병원 목록 확인</h3>
-              <p className="text-sm text-hospital-muted mb-3">
-                왼쪽 하단 버튼으로 주변 병원 목록을 한눈에 확인하세요
-              </p>
-              <div className="text-xs text-hospital-muted/70 bg-hospital-background rounded-lg px-3 py-2">
-                클릭하면 해당 병원 위치로 이동
-              </div>
-            </div>
-          </div>
-
-          {/* 추가 팁 섹션 */}
-          <div className="mt-12 p-6 rounded-2xl bg-gradient-to-br from-hospital-primary/5 to-hospital-secondary/5 border border-hospital-primary/10">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-hospital-primary/10 flex items-center justify-center flex-shrink-0">
-                <Image
-                  src="/icon/share.svg"
-                  alt="공유"
-                  width={20}
-                  height={20}
-                  className="w-5 h-5 text-hospital-primary"
-                />
-              </div>
-              <div>
-                <h4 className="font-semibold text-hospital-foreground mb-2">
-                  💡 위치 공유 기능
-                </h4>
-                <p className="text-sm text-hospital-muted">
-                  검색한 위치가 URL에 자동으로 저장됩니다. URL을 복사하여 다른 사람과 공유하면
-                  같은 위치의 지도를 바로 볼 수 있습니다.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-8 bg-hospital-foreground text-white">
-        <div className="max-w-[1200px] mx-auto px-4 tablet:px-6 pc:px-8">
-          <div className="text-center">
-            <p className="text-sm text-gray-400">
-              © 2024 동물병원 찾기. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      </motion.footer>
     </div>
   );
 }

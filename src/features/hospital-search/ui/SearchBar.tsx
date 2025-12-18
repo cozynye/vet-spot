@@ -59,13 +59,13 @@ export default function SearchBar({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 py-4">
+    <div className="w-full max-w-4xl mx-auto px-3 py-3 tablet:px-4 tablet:py-4">
       <div className="card-glass animate-scale-in h-[50px] tablet:h-[70px]">
-        <form onSubmit={handleSubmit} className="flex items-center gap-3 h-full">
+        <form onSubmit={handleSubmit} className="flex items-center gap-2 tablet:gap-3 h-full">
           {/* 검색 아이콘 */}
           <div className="flex-shrink-0">
             <svg
-              className="w-5 h-5 text-hospital-muted"
+              className="w-4 h-4 tablet:w-5 tablet:h-5 text-hospital-muted"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -87,19 +87,19 @@ export default function SearchBar({
             onFocus={onFocus}
             onBlur={onBlur}
             placeholder={placeholder}
-            className="flex-1 bg-transparent border-none outline-none text-hospital-foreground placeholder:text-hospital-muted text-base"
+            className="flex-1 min-w-0 bg-transparent border-none outline-none text-hospital-foreground placeholder:text-hospital-muted text-sm tablet:text-base"
           />
 
           {/* 현재 위치 버튼 */}
           <button
             type="button"
             onClick={handleLocationClick}
-            className="flex-shrink-0 p-2 rounded-lg hover:bg-hospital-primary/10 text-hospital-primary transition-all duration-300 active:scale-95"
+            className="flex-shrink-0 p-1.5 tablet:p-2 rounded-lg hover:bg-hospital-primary/10 text-hospital-primary transition-all duration-300 active:scale-95"
             aria-label="내 위치"
             title="내 위치로 이동"
           >
             <svg
-              className="w-5 h-5"
+              className="w-4 h-4 tablet:w-5 tablet:h-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -122,7 +122,7 @@ export default function SearchBar({
           {/* 검색 버튼 */}
           <button
             type="submit"
-            className="flex-shrink-0 px-4 py-2 tablet:px-6 tablet:py-2.5 rounded-lg gradient-primary text-white font-medium shadow-glow hover:opacity-90 transition-all duration-300 active:scale-95 text-sm tablet:text-base"
+            className="flex-shrink-0 px-3 py-1.5 tablet:px-6 tablet:py-2.5 rounded-lg gradient-primary text-white font-medium shadow-glow hover:opacity-90 transition-all duration-300 active:scale-95 text-sm tablet:text-base"
           >
             검색
           </button>
